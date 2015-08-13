@@ -17,10 +17,10 @@
 
 <resources>
     <dimen name="button_margin">12dp</dimen>
-    <dimen name="button_margin_bottom">54dp</dimen>
+    <dimen name="button_margin_bottom">70dp</dimen>
     <dimen name="text_padding">24dp</dimen>
     <dimen name="action_bar_offset">66dp</dimen>
-    <dimen name="showcase_radius">24dp</dimen>
-    <dimen name="showcase_radius_inner">26dp</dimen>
-    <dimen name="showcase_radius_outer">54dp</dimen>
+    <dimen name="showcase_radius">34dp</dimen>
+    <dimen name="showcase_radius_inner">36dp</dimen>
+    <dimen name="showcase_radius_outer">74dp</dimen>
 </resources>
