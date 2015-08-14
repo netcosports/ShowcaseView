@@ -35,9 +35,7 @@ class StandardShowcaseDrawer implements ShowcaseDrawer {
     public StandardShowcaseDrawer(Resources resources) {
         PorterDuffXfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY);
         eraserPaint = new Paint();
-        eraserPaint.setColor(0xFFFFFF);
-        eraserPaint.setAlpha(0);
-        eraserPaint.setXfermode(xfermode);
+        eraserPaint.setColor(R.color.sv_blue);
         eraserPaint.setAntiAlias(true);
         basicPaint = new Paint();
         showcaseRadius = resources.getDimension(R.dimen.showcase_radius);

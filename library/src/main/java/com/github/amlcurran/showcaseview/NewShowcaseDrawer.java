@@ -19,6 +19,7 @@ package com.github.amlcurran.showcaseview;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 
 /**
  * Created by curraa01 on 13/10/2013.
@@ -27,11 +28,13 @@ class NewShowcaseDrawer extends StandardShowcaseDrawer {
 
     private static final int ALPHA_60_PERCENT = 153;
     private final float outerRadius;
+    private final float middleRadius;
     private final float innerRadius;
 
     public NewShowcaseDrawer(Resources resources) {
         super(resources);
         outerRadius = resources.getDimension(R.dimen.showcase_radius_outer);
+        middleRadius = resources.getDimension(R.dimen.showcase_radius_middle);
         innerRadius = resources.getDimension(R.dimen.showcase_radius_inner);
     }
 
@@ -42,10 +45,15 @@ class NewShowcaseDrawer extends StandardShowcaseDrawer {
 
     @Override
     public void drawShowcase(Bitmap buffer, float x, float y, float scaleMultiplier) {
+        eraserPaint.setStyle(Paint.Style.STROKE);
+
         Canvas bufferCanvas = new Canvas(buffer);
-        eraserPaint.setAlpha(ALPHA_60_PERCENT);
+
+        eraserPaint.setStrokeWidth(12);
         bufferCanvas.drawCircle(x, y, outerRadius, eraserPaint);
-        eraserPaint.setAlpha(0);
+        eraserPaint.setStrokeWidth(9);
+        bufferCanvas.drawCircle(x, y, middleRadius, eraserPaint);
+        eraserPaint.setStrokeWidth(6);
         bufferCanvas.drawCircle(x, y, innerRadius, eraserPaint);
     }
 
