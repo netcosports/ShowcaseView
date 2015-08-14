@@ -63,6 +63,9 @@ public class ShowcaseView extends RelativeLayout
     private boolean hasCustomClickListener = false;
     private boolean blockTouches = true;
     private boolean hideOnTouch = false;
+    private boolean hideOnTargetTouch = true;
+    private Point targetPoint;
+
     private OnShowcaseEventListener mEventListener = OnShowcaseEventListener.NONE;
 
     private boolean hasAlteredText = false;
@@ -164,7 +167,7 @@ public class ShowcaseView extends RelativeLayout
                 if (!shotStateStore.hasShot()) {
 
                     updateBitmap();
-                    Point targetPoint = target.getPoint();
+                    targetPoint = target.getPoint();
                     if (targetPoint != null) {
                         hasNoTarget = false;
                         if (animate) {
@@ -333,9 +336,17 @@ public class ShowcaseView extends RelativeLayout
         float xDelta = Math.abs(motionEvent.getRawX() - showcaseX);
         float yDelta = Math.abs(motionEvent.getRawY() - showcaseY);
         double distanceFromFocus = Math.sqrt(Math.pow(xDelta, 2) + Math.pow(yDelta, 2));
+        int targetRadius = getResources().getDimensionPixelSize(R.dimen.showcase_radius_inner);
 
         if (MotionEvent.ACTION_UP == motionEvent.getAction() &&
                 hideOnTouch && distanceFromFocus > showcaseDrawer.getBlockedRadius()) {
+            this.hide();
+            return true;
+        } else if (hideOnTargetTouch && MotionEvent.ACTION_UP == motionEvent.getAction()
+                && targetPoint.x - targetRadius < motionEvent.getRawX()
+                && targetPoint.x + targetRadius > motionEvent.getRawX()
+                && targetPoint.y - targetRadius < motionEvent.getRawY()
+                && targetPoint.y + targetRadius > motionEvent.getRawY()) {
             this.hide();
             return true;
         }
@@ -487,6 +498,17 @@ public class ShowcaseView extends RelativeLayout
         }
 
         /**
+         * Don't make the ShowcaseView block touches on itself. This doesn't
+         * block touches in the showcased area.
+         * <p/>
+         * By default, the ShowcaseView does block touches
+         */
+        public Builder hideOnTargetTouch() {
+            showcaseView.hideOnTargetTouch(true);
+            return this;
+        }
+
+        /**
          * Make this ShowcaseView hide when the user touches outside the showcased area.
          * This enables {@link #doNotBlockTouches()} as well.
          * <p/>
@@ -564,6 +586,14 @@ public class ShowcaseView extends RelativeLayout
     @Override
     public void setBlocksTouches(boolean blockTouches) {
         this.blockTouches = blockTouches;
+    }
+
+    /**
+     * @see Builder#hideOnTargetTouch()
+     */
+    @Override
+    public void hideOnTargetTouch(boolean hideOnTargetTouch) {
+        this.hideOnTargetTouch = hideOnTargetTouch;
     }
 
     /**
