@@ -450,6 +450,14 @@ public class ShowcaseView extends RelativeLayout
         }
 
         /**
+         * Set the button text shown on the ShowcaseView.
+         */
+        public Builder setButtonText(CharSequence title) {
+            showcaseView.setButtonText(title);
+            return this;
+        }
+
+        /**
          * Set the style of the ShowcaseView. See the sample app for example styles.
          */
         public Builder setStyle(int theme) {
