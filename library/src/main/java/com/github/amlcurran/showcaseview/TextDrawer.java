@@ -69,7 +69,7 @@ class TextDrawer {
                 canvas.save();
                 if (hasRecalculated) {
                     mDynamicTitleLayout = new DynamicLayout(mTitle, titlePaint,
-                            (int) textPosition[2], Layout.Alignment.ALIGN_NORMAL,
+                            (int) textPosition[2], Layout.Alignment.ALIGN_CENTER,
                             1.0f, 1.0f, true);
                 }
                 if (mDynamicTitleLayout != null) {
@@ -84,7 +84,7 @@ class TextDrawer {
                 if (hasRecalculated) {
                     mDynamicDetailLayout = new DynamicLayout(mDetails, textPaint,
                             (int) textPosition[2],
-                            Layout.Alignment.ALIGN_NORMAL,
+                            Layout.Alignment.ALIGN_CENTER,
                             1.2f, 1.0f, true);
                 }
                 float offsetForTitle = mDynamicTitleLayout != null ? mDynamicTitleLayout.getHeight() :
