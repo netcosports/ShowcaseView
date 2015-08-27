@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -187,8 +188,8 @@ public class ShowcaseView extends RelativeLayout
 
     private void updateBitmap() {
         if (bitmapBuffer == null || haveBoundsChanged()) {
-            if(bitmapBuffer != null)
-        		bitmapBuffer.recycle();
+            if (bitmapBuffer != null)
+                bitmapBuffer.recycle();
             bitmapBuffer = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
 
         }
@@ -308,6 +309,7 @@ public class ShowcaseView extends RelativeLayout
                 setVisibility(View.GONE);
                 isShowing = false;
                 mEventListener.onShowcaseViewDidHide(ShowcaseView.this);
+                removeViewFromHierarchy();
             }
         });
     }
@@ -366,6 +368,7 @@ public class ShowcaseView extends RelativeLayout
     private void hideImmediate() {
         isShowing = false;
         setVisibility(GONE);
+        removeViewFromHierarchy();
     }
 
     @Override
@@ -394,6 +397,13 @@ public class ShowcaseView extends RelativeLayout
      * Builder class which allows easier creation of {@link ShowcaseView}s.
      * It is recommended that you use this Builder class.
      */
+    private void removeViewFromHierarchy() {
+        ViewParent parent = getParent();
+        if (parent != null && parent instanceof ViewGroup) {
+            ((ViewGroup) parent).removeView(this);
+        }
+    }
+
     public static class Builder {
 
         final ShowcaseView showcaseView;
