@@ -17,27 +17,21 @@
 package com.github.amlcurran.showcaseview;
 
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.Drawable;
 
 class StandardShowcaseDrawer implements ShowcaseDrawer {
 
     protected final Paint eraserPaint;
     protected final Drawable showcaseDrawable;
-    private final Paint basicPaint;
     private final float showcaseRadius;
-    protected int backgroundColour;
 
     public StandardShowcaseDrawer(Resources resources) {
-        PorterDuffXfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY);
         eraserPaint = new Paint();
         eraserPaint.setColor(resources.getColor(R.color.sv_blue));
         eraserPaint.setAntiAlias(true);
-        basicPaint = new Paint();
         showcaseRadius = resources.getDimension(R.dimen.showcase_radius);
         showcaseDrawable = resources.getDrawable(R.drawable.cling_bleached);
     }
@@ -48,17 +42,8 @@ class StandardShowcaseDrawer implements ShowcaseDrawer {
     }
 
     @Override
-    public void drawShowcase(Bitmap buffer, float x, float y, float scaleMultiplier) {
-        Canvas bufferCanvas = new Canvas(buffer);
-        bufferCanvas.drawCircle(x, y, showcaseRadius, eraserPaint);
-        int halfW = getShowcaseWidth() / 2;
-        int halfH = getShowcaseHeight() / 2;
-        int left = (int) (x - halfW);
-        int top = (int) (y - halfH);
-        showcaseDrawable.setBounds(left, top,
-                left + getShowcaseWidth(),
-                top + getShowcaseHeight());
-        showcaseDrawable.draw(bufferCanvas);
+    public void drawShowcase(Canvas canvas, float x, float y, float scaleMultiplier) {
+        canvas.drawCircle(x, y, showcaseRadius, eraserPaint);
     }
 
     @Override
@@ -75,20 +60,4 @@ class StandardShowcaseDrawer implements ShowcaseDrawer {
     public float getBlockedRadius() {
         return showcaseRadius;
     }
-
-    @Override
-    public void setBackgroundColour(int backgroundColor) {
-        this.backgroundColour = backgroundColor;
-    }
-
-    @Override
-    public void erase(Bitmap bitmapBuffer) {
-        bitmapBuffer.eraseColor(backgroundColour);
-    }
-
-    @Override
-    public void drawToCanvas(Canvas canvas, Bitmap bitmapBuffer) {
-        canvas.drawBitmap(bitmapBuffer, 0, 0, basicPaint);
-    }
-
 }
