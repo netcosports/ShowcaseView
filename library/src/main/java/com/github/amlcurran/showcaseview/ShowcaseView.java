@@ -19,13 +19,13 @@ package com.github.amlcurran.showcaseview;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -43,7 +44,7 @@ import static com.github.amlcurran.showcaseview.AnimationFactory.AnimationStartL
 /**
  * A view which allows you to showcase areas of your app with an explanation.
  */
-public class ShowcaseView extends RelativeLayout
+public class ShowcaseView extends FrameLayout
         implements View.OnTouchListener, ShowcaseViewApi {
 
     private static final int HOLO_BLUE = Color.parseColor("#33B5E5");
@@ -72,7 +73,6 @@ public class ShowcaseView extends RelativeLayout
     private boolean hasAlteredText = false;
     private boolean hasNoTarget = false;
     private boolean shouldCentreText;
-    private Bitmap bitmapBuffer;
 
     // Animation items
     private long fadeInMillis;
@@ -121,12 +121,16 @@ public class ShowcaseView extends RelativeLayout
 
         setOnTouchListener(this);
 
+        setWillNotDraw(false);
+
         if (mEndButton.getParent() == null) {
             int margin = (int) getResources().getDimension(R.dimen.button_margin);
             int marginBottom = (int) getResources().getDimension(R.dimen.button_margin_bottom);
-            RelativeLayout.LayoutParams lps = (LayoutParams) generateDefaultLayoutParams();
-            lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            lps.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            lps.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
             lps.setMargins(margin, margin, margin, marginBottom);
             mEndButton.setLayoutParams(lps);
             mEndButton.setText(android.R.string.ok);
@@ -167,7 +171,6 @@ public class ShowcaseView extends RelativeLayout
 
                 if (!shotStateStore.hasShot()) {
 
-                    updateBitmap();
                     targetPoint = target.getPoint();
                     if (targetPoint != null) {
                         hasNoTarget = false;
@@ -184,20 +187,6 @@ public class ShowcaseView extends RelativeLayout
                 }
             }
         }, 100);
-    }
-
-    private void updateBitmap() {
-        if (bitmapBuffer == null || haveBoundsChanged()) {
-            if (bitmapBuffer != null)
-                bitmapBuffer.recycle();
-            bitmapBuffer = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-
-        }
-    }
-
-    private boolean haveBoundsChanged() {
-        return getMeasuredWidth() != bitmapBuffer.getWidth() ||
-                getMeasuredHeight() != bitmapBuffer.getHeight();
     }
 
     public boolean hasShowcaseView() {
@@ -262,44 +251,25 @@ public class ShowcaseView extends RelativeLayout
         hasAlteredText = false;
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
-    protected void dispatchDraw(Canvas canvas) {
-        if (showcaseX < 0 || showcaseY < 0 || shotStateStore.hasShot() || bitmapBuffer == null) {
-            super.dispatchDraw(canvas);
-            return;
-        }
-
-        //Draw background color
-        showcaseDrawer.erase(bitmapBuffer);
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
 
         // Draw the showcase drawable
         if (!hasNoTarget) {
-            showcaseDrawer.drawShowcase(bitmapBuffer, showcaseX, showcaseY, scaleMultiplier);
-            showcaseDrawer.drawToCanvas(canvas, bitmapBuffer);
+            showcaseDrawer.drawShowcase(canvas, showcaseX, showcaseY, scaleMultiplier);
         }
 
         // Draw the text on the screen, recalculating its position if necessary
         textDrawer.draw(canvas);
-
-        super.dispatchDraw(canvas);
-
     }
 
     @Override
     public void hide() {
-        clearBitmap();
         // If the type is set to one-shot, store that it has shot
         shotStateStore.storeShot();
         mEventListener.onShowcaseViewHide(this);
         fadeOutShowcase();
-    }
-
-    private void clearBitmap() {
-        if (bitmapBuffer != null && !bitmapBuffer.isRecycled()) {
-            bitmapBuffer.recycle();
-            bitmapBuffer = null;
-        }
     }
 
     private void fadeOutShowcase() {
@@ -621,7 +591,7 @@ public class ShowcaseView extends RelativeLayout
     }
 
     private void updateStyle(TypedArray styled, boolean invalidate) {
-        int backgroundColor = styled.getColor(R.styleable.ShowcaseView_sv_backgroundColor, Color.argb(128, 80, 80, 80));
+        int backgroundColor = styled.getColor(R.styleable.ShowcaseView_sv_backgroundColor, Color.argb(204, 42, 47, 49));
         int showcaseColor = styled.getColor(R.styleable.ShowcaseView_sv_showcaseColor, HOLO_BLUE);
         String buttonText = styled.getString(R.styleable.ShowcaseView_sv_buttonText);
         if (TextUtils.isEmpty(buttonText)) {
@@ -637,7 +607,7 @@ public class ShowcaseView extends RelativeLayout
         styled.recycle();
 
         showcaseDrawer.setShowcaseColour(showcaseColor);
-        showcaseDrawer.setBackgroundColour(backgroundColor);
+        setBackgroundColor(backgroundColor);
         tintButton(showcaseColor, tintButton);
         mEndButton.setText(buttonText);
         textDrawer.setTitleStyling(titleTextAppearance);
@@ -662,7 +632,6 @@ public class ShowcaseView extends RelativeLayout
         @Override
         public void onGlobalLayout() {
             if (!shotStateStore.hasShot()) {
-                updateBitmap();
             }
         }
     }

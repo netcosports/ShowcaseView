@@ -17,7 +17,6 @@
 package com.github.amlcurran.showcaseview;
 
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
@@ -44,17 +43,15 @@ class NewShowcaseDrawer extends StandardShowcaseDrawer {
     }
 
     @Override
-    public void drawShowcase(Bitmap buffer, float x, float y, float scaleMultiplier) {
+    public void drawShowcase(Canvas canvas, float x, float y, float scaleMultiplier) {
         eraserPaint.setStyle(Paint.Style.STROKE);
 
-        Canvas bufferCanvas = new Canvas(buffer);
-
         eraserPaint.setStrokeWidth(12);
-        bufferCanvas.drawCircle(x, y, outerRadius, eraserPaint);
+        canvas.drawCircle(x, y, outerRadius, eraserPaint);
         eraserPaint.setStrokeWidth(9);
-        bufferCanvas.drawCircle(x, y, middleRadius, eraserPaint);
+        canvas.drawCircle(x, y, middleRadius, eraserPaint);
         eraserPaint.setStrokeWidth(6);
-        bufferCanvas.drawCircle(x, y, innerRadius, eraserPaint);
+        canvas.drawCircle(x, y, innerRadius, eraserPaint);
     }
 
     @Override
@@ -70,10 +67,5 @@ class NewShowcaseDrawer extends StandardShowcaseDrawer {
     @Override
     public float getBlockedRadius() {
         return innerRadius;
-    }
-
-    @Override
-    public void setBackgroundColour(int backgroundColor) {
-        this.backgroundColour = backgroundColor;
     }
 }
