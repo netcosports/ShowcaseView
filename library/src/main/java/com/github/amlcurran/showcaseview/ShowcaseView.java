@@ -315,6 +315,7 @@ public class ShowcaseView extends FrameLayout
             this.hide();
             return true;
         } else if (hideOnTargetTouch && MotionEvent.ACTION_UP == motionEvent.getAction()
+                && targetPoint != null
                 && targetPoint.x - targetRadius < motionEvent.getRawX()
                 && targetPoint.x + targetRadius > motionEvent.getRawX()
                 && targetPoint.y - targetRadius < motionEvent.getRawY()
